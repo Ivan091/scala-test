@@ -10,11 +10,10 @@ import org.http4s.dsl.io._
 import org.http4s.server.Router
 import org.http4s.{EntityDecoder, HttpApp, HttpRoutes}
 
+import scala.collection.mutable
+
 object Application extends IOApp {
-
-  case class Tweet(id: Int, message: String)
-
-  val lists = List(
+  val tweets: mutable.Seq[Tweet] = mutable.ArrayDeque(
     Tweet(0, "Lorem ipsum 0"),
     Tweet(1, "Lorem ipsum 1"),
     Tweet(2, "Lorem ipsum 2"),
@@ -22,17 +21,15 @@ object Application extends IOApp {
     Tweet(4, "Lorem ipsum 4"),
     Tweet(5, "Lorem ipsum 5"),
   )
-
-  implicit val decoder: EntityDecoder[IO, Tweet] = jsonOf[IO, Tweet]
-
   val testRoute: HttpRoutes[IO] = HttpRoutes.of[IO] {
     case GET -> Root / "tweet" / IntVar(id) =>
-      lists.find(_.id == id) match {
+      tweets.find(_.id == id) match {
         case Some(tweet) => Ok(tweet.asJson)
         case None => NotFound(s"Count not find a tweet by (id=$id)")
       }
   }
 
+  implicit val decoder: EntityDecoder[IO, Tweet] = jsonOf[IO, Tweet]
   val httpApp: HttpApp[IO] = Router("/" -> testRoute).orNotFound
 
   def run(args: List[String]): IO[ExitCode] = {
@@ -44,4 +41,6 @@ object Application extends IOApp {
       .drain
       .as(ExitCode.Success)
   }
+
+  case class Tweet(id: Int, message: String)
 }

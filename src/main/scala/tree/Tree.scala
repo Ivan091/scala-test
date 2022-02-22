@@ -2,9 +2,10 @@ package org.test
 package tree
 
 import tree.Tree._
+import util.Implicits._
 
-import cats.{Alternative, Monad}
 import cats.implicits._
+import cats.{Alternative, Monad}
 
 import scala.annotation.tailrec
 
@@ -74,9 +75,9 @@ object Tree {
 
   final case class Leaf[A](value: A) extends Tree[A]
 
-  final case object NilLeaf extends Tree[Nothing]
+  case object NilLeaf extends Tree[Nothing]
 
-  implicit final class FoldOrder[A](private val tree: Tree[A]) {
+  implicit final class FoldOrder[A](private val tree: Tree[A]) extends AnyVal {
     private def fold[S >: A, F[_]](f: (F[S], F[S], F[S]) => F[S])(implicit alt: Alternative[F]): F[S] = {
       def loop(tree: Tree[A]): F[S] = {
         tree match {
@@ -98,12 +99,7 @@ object Tree {
 }
 
 object Application {
-  implicit class Printer[A](val x: A) {
-    def print: A = {
-      println(x)
-      x
-    }
-  }
+
   def main(args: Array[String]): Unit = {
     Tree(1, 2, 3)
       .print
