@@ -3,3 +3,8 @@
 /.bsp
 **/target
 /.idea
+.metals/
+.bloop/
+.ammonite/
+metals.sbt
+.vscode
