@@ -15,7 +15,7 @@ object HashSHA256 {
 
   def test(in: Array[Byte], zerosCount: Int): Boolean = {
     var i = 0
-    while i < zerosCount do {
+    while (i < zerosCount) do {
       if (in(i) != 0) {
         return false
       }
